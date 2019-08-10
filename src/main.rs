@@ -8,10 +8,10 @@ fn main() {
 
     let _ = args.next();
     if let Some(second) = args.next() {
-        println!(".intel_syntax noprefix\n");
-        println!(".global main\n");
-        println!("main:\n");
-        println!("  mov rax, {}\n", second.parse::<i32>().unwrap());
-        println!("  ret\n");
+        println!(".intel_syntax noprefix");
+        println!(".global main");
+        println!("main:");
+        println!("  mov rax, {}", second.parse::<i32>().unwrap());
+        println!("  ret");
     }
 }
