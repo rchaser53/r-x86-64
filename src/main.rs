@@ -26,6 +26,16 @@ pub enum Atom {
     Num(i32),
     Keyword(String),
     Boolean(bool),
+    BuiltIn(BuiltIn),
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BuiltIn {
+    Plus,
+    Minus,
+    Times,
+    Divide,
+    Equal,
 }
 
 fn parse_num<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
@@ -39,6 +49,22 @@ fn parse_num<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
     ))(i)
 }
 
+fn parse_builtin_op<'a>(i: &'a str) -> IResult<&'a str, BuiltIn, VerboseError<&'a str>> {
+    let (i, t) = one_of("+-*/=")(i)?;
+
+    Ok((
+        i,
+        match t {
+            '+' => BuiltIn::Plus,
+            '-' => BuiltIn::Minus,
+            '*' => BuiltIn::Times,
+            '/' => BuiltIn::Divide,
+            '=' => BuiltIn::Equal,
+            _ => unreachable!(),
+        },
+    ))
+}
+
 fn parse_bool<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
     alt((
         map(tag("true"), |_| Atom::Boolean(true)),
@@ -47,7 +73,7 @@ fn parse_bool<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
 }
 
 fn parse_atom<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
-    alt((parse_num, parse_bool))(i)
+    alt((parse_num, map(parse_builtin_op, Atom::BuiltIn), parse_bool))(i)
 }
 
 fn parse_constant<'a>(i: &'a str) -> IResult<&'a str, Expr, VerboseError<&'a str>> {
@@ -59,11 +85,10 @@ fn parse_expr<'a>(i: &'a str) -> IResult<&'a str, Expr, VerboseError<&'a str>> {
 }
 
 fn main() {
-    // let abc = parse_expr("123");
-    let mut input = "true234";
+    let mut input = "true + 234";
     while input != "" {
-      let (left, result) = parse_expr(input).unwrap();
-      dbg!(result);
-      input = left;
+        let (left, result) = parse_expr(input).unwrap();
+        dbg!(result);
+        input = left;
     }
 }
