@@ -39,8 +39,15 @@ fn parse_num<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
     ))(i)
 }
 
+fn parse_bool<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
+    alt((
+        map(tag("true"), |_| Atom::Boolean(true)),
+        map(tag("false"), |_| Atom::Boolean(false)),
+    ))(i)
+}
+
 fn parse_atom<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
-    parse_num(i)
+    alt((parse_num, parse_bool))(i)
 }
 
 fn parse_constant<'a>(i: &'a str) -> IResult<&'a str, Expr, VerboseError<&'a str>> {
@@ -52,6 +59,11 @@ fn parse_expr<'a>(i: &'a str) -> IResult<&'a str, Expr, VerboseError<&'a str>> {
 }
 
 fn main() {
-    let abc = parse_expr("123");
-    dbg!(abc);
+    // let abc = parse_expr("123");
+    let mut input = "true234";
+    while input != "" {
+      let (left, result) = parse_expr(input).unwrap();
+      dbg!(result);
+      input = left;
+    }
 }
