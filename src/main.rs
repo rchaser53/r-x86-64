@@ -17,6 +17,11 @@ use nom::{
 };
 
 #[derive(Debug, PartialEq, Clone)]
+pub enum Statement {
+    Bin(Expr, Atom, Expr),
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum Expr {
     Constant(Atom),
 }
@@ -73,19 +78,24 @@ fn parse_bool<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
 }
 
 fn parse_atom<'a>(i: &'a str) -> IResult<&'a str, Atom, VerboseError<&'a str>> {
-    alt((parse_num, map(parse_builtin_op, Atom::BuiltIn), parse_bool))(i)
+    alt((parse_num, parse_bool))(i)
 }
 
 fn parse_constant<'a>(i: &'a str) -> IResult<&'a str, Expr, VerboseError<&'a str>> {
     map(parse_atom, |atom| Expr::Constant(atom))(i)
 }
 
-fn parse_expr<'a>(i: &'a str) -> IResult<&'a str, Expr, VerboseError<&'a str>> {
-    preceded(multispace0, parse_constant)(i)
+fn parse_expr<'a>(i: &'a str) -> IResult<&'a str, Statement, VerboseError<&'a str>> {
+    let (input, (left, op, right)) = tuple((
+        preceded(multispace0, parse_constant),
+        preceded(multispace0, map(parse_builtin_op, Atom::BuiltIn)),
+        preceded(multispace0, parse_constant),
+    ))(i)?;
+    Ok((input, Statement::Bin(left, op, right)))
 }
 
 fn main() {
-    let mut input = "true + 234";
+    let mut input = "111 + 234";
     while input != "" {
         let (left, result) = parse_expr(input).unwrap();
         dbg!(result);
