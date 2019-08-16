@@ -3,7 +3,8 @@
 
 #[macro_use] extern crate lalrpop_util;
 
-lalrpop_mod!(pub calculator1); // synthesized by LALRPOP
+pub mod calculator1;
+use calculator1::TermParser;
 
 #[test]
 fn calculator1() {
