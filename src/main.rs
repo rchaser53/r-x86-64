@@ -3,17 +3,21 @@
 
 #[macro_use] extern crate lalrpop_util;
 
-pub mod calculator1;
-use calculator1::TermParser;
+pub mod calculator;
+// use calculator::TermParser;
+
+pub mod calculator2;
+// use calculator2::TermParser;
 
 #[test]
-fn calculator1() {
-    assert!(calculator1::TermParser::new().parse("22").is_ok());
-    assert!(calculator1::TermParser::new().parse("(22)").is_ok());
-    assert!(calculator1::TermParser::new().parse("((((22))))").is_ok());
-    assert!(calculator1::TermParser::new().parse("((22)").is_err());
+fn calculator() {
+    assert!(calculator::TermParser::new().parse("22").is_ok());
+    assert!(calculator::TermParser::new().parse("(22)").is_ok());
+    assert!(calculator::TermParser::new().parse("((((22))))").is_ok());
+    assert!(calculator::TermParser::new().parse("((22)").is_err());
 }
 
 fn main() {
-    dbg!(calculator1::TermParser::new().parse("22"));
+    dbg!(calculator::TermParser::new().parse("22"));
+    dbg!(calculator2::TermParser::new().parse("22"));
 }
