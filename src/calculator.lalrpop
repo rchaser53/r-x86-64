@@ -37,6 +37,7 @@ FactorOp: Opcode = {
 
 Term: Box<Expr> = {
     Num => Box::new(Expr::Number(<>)),
+    Id => Box::new(Expr::Id(<>)),
     "(" <Expr> ")",
     ! => { errors.push(<>); Box::new(Expr::Error) },
 };
@@ -44,3 +45,7 @@ Term: Box<Expr> = {
 Num: i32 = {
     r"[0-9]+" => i32::from_str(<>).unwrap()
 };
+
+Id: String = {
+    r"([a-z]|[A-Z])+" => <>.to_string()
+}
