@@ -5,6 +5,7 @@ use lalrpop_util::ErrorRecovery;
 grammar<'err>(errors: &'err mut Vec<ErrorRecovery<usize, Token<'input>, &'static str>>);
 
 pub Exprs = Comma<Expr>;
+pub Statements = Statement;
 
 Comma<T>: Vec<T> = { // (0)
     <v:(<T> ",")*> <e:T?> => match e { // (1)
@@ -41,6 +42,10 @@ Term: Box<Expr> = {
     "(" <Expr> ")",
     ! => { errors.push(<>); Box::new(Expr::Error) },
 };
+
+Statement: (Box<Expr>, Box<Expr>) = {
+    <a:Term> "=" <b:Term> => (a, b)
+}
 
 Num: i32 = {
     r"[0-9]+" => i32::from_str(<>).unwrap()
