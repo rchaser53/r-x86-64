@@ -7,6 +7,38 @@ pub enum Expr {
     Error,
 }
 
+pub enum Stmt {
+    Bin {
+        lhs: Box<Expr>,
+        op: Opcode,
+        rhs: Box<Expr>,
+    },
+    Exp(Box<Expr>),
+    Assign {
+        lhs: Box<Expr>,
+        rhs: Box<Expr>,
+    },
+}
+
+impl Debug for Stmt {
+    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+        use self::Stmt::*;
+        match *self {
+            Bin {
+                ref lhs,
+                op,
+                ref rhs,
+            } => write!(fmt, "{:?} {:?} {:?}", lhs, op, rhs),
+            Exp(ref exp) => write!(fmt, "{:?}", exp),
+            Assign { ref lhs, ref rhs } => write!(fmt, "{:?} {:?}", lhs, rhs),
+        }
+    }
+}
+
+pub enum PRESERVE {
+    LET,
+}
+
 #[derive(Copy, Clone)]
 pub enum Opcode {
     Mul,

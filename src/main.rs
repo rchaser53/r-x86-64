@@ -13,5 +13,5 @@ fn main() {
     let mut errors = Vec::new();
     dbg!(ExprsParser::new().parse(&mut errors, "12 + 34 * 56"));
     dbg!(ExprsParser::new().parse(&mut errors, "AbcdE"));
-    dbg!(StatementsParser::new().parse(&mut errors, "22 = 123"));
+    dbg!(StatementsParser::new().parse(&mut errors, "let 22 = 123;"));
 }
