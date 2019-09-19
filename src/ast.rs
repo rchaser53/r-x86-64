@@ -1,43 +1,61 @@
 use std::fmt::{Debug, Error, Formatter};
 
-pub enum Expr {
+#[derive(Debug)]
+pub enum ExprKind {
     Number(i32),
     Id(String),
-    Op(Box<Expr>, Opcode, Box<Expr>),
     Error,
 }
 
-pub enum Stmt {
-    Bin {
-        lhs: Box<Expr>,
-        op: Opcode,
-        rhs: Box<Expr>,
-    },
-    Exp(Box<Expr>),
-    Assign {
-        lhs: Box<Expr>,
-        rhs: Box<Expr>,
-    },
+#[derive(Debug)]
+pub struct Expr {
+    pub node: ExprKind,
 }
 
-impl Debug for Stmt {
-    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
-        use self::Stmt::*;
-        match *self {
-            Bin {
-                ref lhs,
-                op,
-                ref rhs,
-            } => write!(fmt, "{:?} {:?} {:?}", lhs, op, rhs),
-            Exp(ref exp) => write!(fmt, "{:?}", exp),
-            Assign { ref lhs, ref rhs } => write!(fmt, "{:?} {:?}", lhs, rhs),
-        }
-    }
+#[derive(Debug)]
+pub struct Stmt {
+    pub node: StmtKind,
 }
 
-pub enum PRESERVE {
-    LET,
+#[derive(Debug)]
+pub enum StmtKind {
+    Local(Local),
+    Expr(Expr),
 }
+
+#[derive(Debug)]
+pub struct Local {
+    pub id: String,
+    // pub ty: Option<Ty>,
+    pub init: Option<Expr>,
+}
+
+// impl Debug for Stmt {
+//     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+//         use self::Stmt::*;
+//         match *self {
+//             Bin {
+//                 ref lhs,
+//                 op,
+//                 ref rhs,
+//             } => write!(fmt, "{:?} {:?} {:?}", lhs, op, rhs),
+//             Exp(ref exp) => write!(fmt, "{:?}", exp),
+//             Assign { ref lhs, ref rhs } => write!(fmt, "{:?} {:?}", lhs, rhs),
+//         }
+//     }
+// }
+
+// impl Debug for Expr {
+//     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
+//         use self::Expr::*;
+//         match *self {
+//             Number(n) => write!(fmt, "{:?}", n),
+//             Id(ref n) => write!(fmt, "{:?}", n),
+//             Op(ref l, op, ref r) => write!(fmt, "({:?} {:?} {:?})", l, op, r),
+//             Error => write!(fmt, "error"),
+//         }
+//     }
+// }
 
 #[derive(Copy, Clone)]
 pub enum Opcode {
@@ -45,18 +63,6 @@ pub enum Opcode {
     Div,
     Add,
     Sub,
-}
-
-impl Debug for Expr {
-    fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
-        use self::Expr::*;
-        match *self {
-            Number(n) => write!(fmt, "{:?}", n),
-            Id(ref n) => write!(fmt, "{:?}", n),
-            Op(ref l, op, ref r) => write!(fmt, "({:?} {:?} {:?})", l, op, r),
-            Error => write!(fmt, "error"),
-        }
-    }
 }
 
 impl Debug for Opcode {
@@ -70,3 +76,7 @@ impl Debug for Opcode {
         }
     }
 }
+
+// pub enum PRESERVE {
+//     LET,
+// }
